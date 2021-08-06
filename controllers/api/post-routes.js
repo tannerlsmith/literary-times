@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const sequelize = require('../../config/connection');
-const { Post, User, Like, Comment } = require('../../models');
+const { Post, User, Comment, Like } = require('../../models');
 
 // get all users
 router.get('/', (req, res) => {
@@ -13,7 +13,6 @@ router.get('/', (req, res) => {
       'created_at',
       [sequelize.literal('(SELECT COUNT(*) FROM like WHERE post.id = like.post_id)'), 'like_count']
     ],
-    order: [['created_at', 'DESC']],
     include: [
       {
         model: Comment,
@@ -35,8 +34,6 @@ router.get('/', (req, res) => {
       res.status(500).json(err);
     });
 });
-
-
 
 router.get('/:id', (req, res) => {
   Post.findOne({
@@ -78,13 +75,12 @@ router.get('/:id', (req, res) => {
     });
 });
 
-
-
 router.post('/', (req, res) => {
+  // expects {title: 'Taskmaster goes public!', post_url: 'https://taskmaster.com/press', user_id: 1}
   Post.create({
     title: req.body.title,
     post_url: req.body.post_url,
-    user_id: req.body.user_id
+    user_id: req.session.user_id
   })
     .then(dbPostData => res.json(dbPostData))
     .catch(err => {
@@ -93,19 +89,15 @@ router.post('/', (req, res) => {
     });
 });
 
-
-
 router.put('/uplike', (req, res) => {
   // custom static method created in models/Post.js
-  Post.uplike(req.body, { Like, Comment, User })
+  Post.uplike({ ...req.body, user_id: req.session.user_id }, { Like, Comment, User })
     .then(updatedLikeData => res.json(updatedLikeData))
     .catch(err => {
       console.log(err);
       res.status(500).json(err);
     });
 });
-
-
 
 router.put('/:id', (req, res) => {
   Post.update(
@@ -132,6 +124,7 @@ router.put('/:id', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
+  console.log('id', req.params.id);
   Post.destroy({
     where: {
       id: req.params.id
