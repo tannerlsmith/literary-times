@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const sequelize = require('../../config/connection');
-const { Post, User, Like } = require('../../models');
+const { Post, User, Like, Comment } = require('../../models');
 
 // get all users
 router.get('/', (req, res) => {
@@ -16,6 +16,14 @@ router.get('/', (req, res) => {
     order: [['created_at', 'DESC']],
     include: [
       {
+        model: Comment,
+        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+        include: {
+          model: User,
+          attributes: ['username']
+        }
+      },
+      {
         model: User,
         attributes: ['username']
       }
@@ -27,6 +35,8 @@ router.get('/', (req, res) => {
       res.status(500).json(err);
     });
 });
+
+
 
 router.get('/:id', (req, res) => {
   Post.findOne({
@@ -41,6 +51,14 @@ router.get('/:id', (req, res) => {
       [sequelize.literal('(SELECT COUNT(*) FROM like WHERE post.id = like.post_id)'), 'like_count']
     ],
     include: [
+      {
+        model: Comment,
+        attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+        include: {
+          model: User,
+          attributes: ['username']
+        }
+      },
       {
         model: User,
         attributes: ['username']
@@ -60,8 +78,9 @@ router.get('/:id', (req, res) => {
     });
 });
 
+
+
 router.post('/', (req, res) => {
-  // expects {title: 'Taskmaster goes public!', post_url: 'https://taskmaster.com/press', user_id: 1}
   Post.create({
     title: req.body.title,
     post_url: req.body.post_url,
@@ -74,15 +93,19 @@ router.post('/', (req, res) => {
     });
 });
 
+
+
 router.put('/uplike', (req, res) => {
   // custom static method created in models/Post.js
-  Post.uplike(req.body, { Like })
-    .then(updatedPostData => res.json(updatedPostData))
+  Post.uplike(req.body, { Like, Comment, User })
+    .then(updatedLikeData => res.json(updatedLikeData))
     .catch(err => {
       console.log(err);
-      res.status(400).json(err);
+      res.status(500).json(err);
     });
 });
+
+
 
 router.put('/:id', (req, res) => {
   Post.update(

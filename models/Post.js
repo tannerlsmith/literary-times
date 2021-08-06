@@ -20,6 +20,16 @@ class Post extends Model {
             sequelize.literal('(SELECT COUNT(*) FROM like WHERE post.id = like.post_id)'),
             'like_count'
           ]
+        ],
+        include: [
+          {
+            model: models.Comment,
+            attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+            include: {
+              model: models.User,
+              attributes: ['username']
+            }
+          }
         ]
       });
     });
