@@ -20,13 +20,15 @@ a:hover{
     color: #261e1a;
 }
 
-button {
-    background-color: #225ca3;
+.login-signup-button {
     border: 0;
-    padding: 1%;
+    padding: 10px;
     color: white;
-    font-weight: bold;
-    transition: background-color .1s;
+    background-color: #657786;
     cursor: pointer;
-    border-radius: 5px;
+}
+
+.login-signup-button:hover {
+    background-color: #AAB8C2;
+    color: white;
 }
