@@ -5,7 +5,7 @@
 deployed link: https://blooming-river-13835.herokuapp.com/
 
 
-##Things I used:<br>
+## Things I used:<br>
 express-handlebars<br>
 MySQL2<br>
 Sequelize<br>
