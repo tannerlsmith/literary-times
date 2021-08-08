@@ -5,11 +5,11 @@
 deployed link: https://blooming-river-13835.herokuapp.com/
 
 
-##Things I used:
-express-handlebars
-MySQL2
-Sequelize
-dotenv
-bcrypt
-connect-session-sequelize
+##Things I used:<br>
+express-handlebars<br>
+MySQL2<br>
+Sequelize<br>
+dotenv<br>
+bcrypt<br>
+connect-session-sequelize<br>
 express-session
